@@ -873,3 +873,5 @@ client.on(
           )
         ) {
           return interaction.reply({
+}
+)
