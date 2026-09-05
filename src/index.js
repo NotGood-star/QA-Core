@@ -3,8 +3,7 @@ import { registerEvents } from "./events/index.js";
 
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
+    GatewayIntentBits.Guilds
   ]
 });
 
