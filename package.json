@@ -1,12 +1,12 @@
 {
   "name": "qa-central",
   "version": "1.0.0",
-  "description": "QA Central - Roblox Game Testing Discord Bot",
+  "description": "QA Central Discord bot for Roblox game testing and testers",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "register": "node src/register.js"
+    "deploy": "node src/deploy-commands.js"
   },
   "engines": {
     "node": ">=24"
