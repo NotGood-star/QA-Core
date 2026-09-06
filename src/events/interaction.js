@@ -1,5 +1,8 @@
+import { handleHostButton, handleHostModal } from "../handlers/host.js";
+
 export async function interaction(client, interaction) {
   try {
+    // Slash commands
     if (interaction.isChatInputCommand()) {
       if (interaction.commandName !== "qa") {
         return;
@@ -11,20 +14,36 @@ export async function interaction(client, interaction) {
       return;
     }
 
+    // Buttons
     if (interaction.isButton()) {
-      console.log(`🔘 Button clicked: ${interaction.customId}`);
+      const handled = await handleHostButton(interaction);
+
+      if (handled) {
+        return;
+      }
+
+      console.log(`🔘 Unknown button: ${interaction.customId}`);
       return;
     }
 
+    // Modals
+    if (interaction.isModalSubmit()) {
+      const handled = await handleHostModal(interaction);
+
+      if (handled) {
+        return;
+      }
+
+      console.log(`📝 Unknown modal: ${interaction.customId}`);
+      return;
+    }
+
+    // Select menus
     if (interaction.isStringSelectMenu()) {
       console.log(`📋 Menu used: ${interaction.customId}`);
       return;
     }
 
-    if (interaction.isModalSubmit()) {
-      console.log(`📝 Modal submitted: ${interaction.customId}`);
-      return;
-    }
   } catch (error) {
     console.error("❌ Interaction error:", error);
 
@@ -41,7 +60,7 @@ export async function interaction(client, interaction) {
         });
       }
     } catch (replyError) {
-      console.error("❌ Could not send interaction error:", replyError);
+      console.error("❌ Failed to send error response:", replyError);
     }
   }
-  }
+}
