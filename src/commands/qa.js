@@ -41,35 +41,33 @@ export const qaCommand = {
   async execute(interaction) {
     const subcommand = interaction.options.getSubcommand();
 
-    if (subcommand === "setup") {
-      const embed = hostPanelEmbed();
-      const row = hostPanelRow();
+    switch (subcommand) {
+      case "setup":
+        return interaction.reply({
+          embeds: [hostPanelEmbed()],
+          components: [hostPanelRow()]
+        });
 
-      await interaction.channel.send({
-        embeds: [embed],
-        components: [row]
-      });
+      case "test":
+        return interaction.reply({
+          content: "🧪 Test creation will be added next.",
+          ephemeral: true
+        });
 
-      return interaction.reply({
-        content: "✅ QA Host Panel has been posted!",
-        ephemeral: true
-      });
-    }
+      case "close": {
+        const id = interaction.options.getInteger("id");
 
-    if (subcommand === "test") {
-      return interaction.reply({
-        content: "🧪 Test creation will be added next.",
-        ephemeral: true
-      });
-    }
+        return interaction.reply({
+          content: `🔒 Test #${id} closing will be added with the database system.`,
+          ephemeral: true
+        });
+      }
 
-    if (subcommand === "close") {
-      const id = interaction.options.getInteger("id");
-
-      return interaction.reply({
-        content: `🔒 Test #${id} closing will be added with the database system.`,
-        ephemeral: true
-      });
+      default:
+        return interaction.reply({
+          content: "❌ Unknown QA command.",
+          ephemeral: true
+        });
     }
   }
 };
