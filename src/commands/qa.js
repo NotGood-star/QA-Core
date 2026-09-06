@@ -3,6 +3,11 @@ import {
   PermissionFlagsBits
 } from "discord.js";
 
+import {
+  hostPanelEmbed,
+  hostPanelRow
+} from "../embeds/hostPanel.js";
+
 export const qaCommand = {
   data: new SlashCommandBuilder()
     .setName("qa")
@@ -12,12 +17,15 @@ export const qaCommand = {
       subcommand
         .setName("setup")
         .setDescription("Set up the QA Central host panel")
+        .setDefaultMemberPermissions(
+          PermissionFlagsBits.Administrator
+        )
     )
 
     .addSubcommand(subcommand =>
       subcommand
         .setName("test")
-        .setDescription("Create a QA test manually")
+        .setDescription("Create a QA test")
     )
 
     .addSubcommand(subcommand =>
@@ -27,7 +35,7 @@ export const qaCommand = {
         .addIntegerOption(option =>
           option
             .setName("id")
-            .setDescription("The test ID")
+            .setDescription("Test ID")
             .setRequired(true)
         )
     ),
@@ -35,33 +43,35 @@ export const qaCommand = {
   async execute(interaction) {
     const subcommand = interaction.options.getSubcommand();
 
-    switch (subcommand) {
-      case "setup":
-        return interaction.reply({
-          content: "⚙️ QA Central setup will be handled here.",
-          ephemeral: true
-        });
+    if (subcommand === "setup") {
+      const embed = hostPanelEmbed();
+      const row = hostPanelRow();
 
-      case "test":
-        return interaction.reply({
-          content: "🧪 Test creation will be handled here.",
-          ephemeral: true
-        });
+      await interaction.channel.send({
+        embeds: [embed],
+        components: [row]
+      });
 
-      case "close": {
-        const id = interaction.options.getInteger("id");
+      return interaction.reply({
+        content: "✅ QA Host Panel has been posted!",
+        ephemeral: true
+      });
+    }
 
-        return interaction.reply({
-          content: `🔒 Test #${id} closing will be handled here.`,
-          ephemeral: true
-        });
-      }
+    if (subcommand === "test") {
+      return interaction.reply({
+        content: "🧪 Test creation is coming next.",
+        ephemeral: true
+      });
+    }
 
-      default:
-        return interaction.reply({
-          content: "❌ Unknown QA command.",
-          ephemeral: true
-        });
+    if (subcommand === "close") {
+      const id = interaction.options.getInteger("id");
+
+      return interaction.reply({
+        content: `🔒 Test #${id} closing will be added with the database system.`,
+        ephemeral: true
+      });
     }
   }
 };
