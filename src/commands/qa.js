@@ -12,14 +12,12 @@ export const qaCommand = {
   data: new SlashCommandBuilder()
     .setName("qa")
     .setDescription("QA Central management commands")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     .addSubcommand(subcommand =>
       subcommand
         .setName("setup")
         .setDescription("Set up the QA Central host panel")
-        .setDefaultMemberPermissions(
-          PermissionFlagsBits.Administrator
-        )
     )
 
     .addSubcommand(subcommand =>
@@ -60,7 +58,7 @@ export const qaCommand = {
 
     if (subcommand === "test") {
       return interaction.reply({
-        content: "🧪 Test creation is coming next.",
+        content: "🧪 Test creation will be added next.",
         ephemeral: true
       });
     }
