@@ -1,22 +1,14 @@
-import { qaCommand } from "../commands/qa.js";
-
-const commands = new Map([
-  ["qa", qaCommand]
-]);
-
 export async function interaction(client, interaction) {
   try {
     if (interaction.isChatInputCommand()) {
-      const command = commands.get(interaction.commandName);
-
-      if (!command) {
-        return interaction.reply({
-          content: "❌ Command not found.",
-          ephemeral: true
-        });
+      if (interaction.commandName !== "qa") {
+        return;
       }
 
-      return command.execute(interaction);
+      const { qaCommand } = await import("../commands/qa.js");
+
+      await qaCommand.execute(interaction);
+      return;
     }
 
     if (interaction.isButton()) {
@@ -36,16 +28,20 @@ export async function interaction(client, interaction) {
   } catch (error) {
     console.error("❌ Interaction error:", error);
 
-    if (interaction.replied || interaction.deferred) {
-      return interaction.followUp({
-        content: "❌ Something went wrong.",
-        ephemeral: true
-      });
+    try {
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({
+          content: "❌ Something went wrong while processing this interaction.",
+          ephemeral: true
+        });
+      } else {
+        await interaction.reply({
+          content: "❌ Something went wrong while processing this interaction.",
+          ephemeral: true
+        });
+      }
+    } catch (replyError) {
+      console.error("❌ Could not send interaction error:", replyError);
     }
-
-    return interaction.reply({
-      content: "❌ Something went wrong.",
-      ephemeral: true
-    });
   }
   }
