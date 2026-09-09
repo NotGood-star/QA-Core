@@ -1,28 +1,66 @@
-import http from "node:http";
-import { Client, GatewayIntentBits } from "discord.js";
-import { registerEvents } from "./events/index.js";
+import { ready } from "./ready.js";
+import { interaction } from "./interaction.js";
 
-const PORT = process.env.PORT || 3000;
+/**
+ * Register all Discord client events.
+ *
+ * @param {import("discord.js").Client} client
+ */
+export function registerEvents(client) {
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds
-  ]
-});
+  // ===========================================================
+  // CLIENT READY
+  // ===========================================================
 
-registerEvents(client);
+  client.once("clientReady", () => {
+    console.log("📡 Discord clientReady event received.");
 
-// Render health server
-const server = http.createServer((req, res) => {
-  res.writeHead(200, {
-    "Content-Type": "text/plain"
+    try {
+      ready(client);
+    } catch (error) {
+      console.error(
+        "❌ Ready event error:",
+        error
+      );
+    }
   });
 
-  res.end("QA Central is online!");
-});
+  // ===========================================================
+  // INTERACTIONS
+  // ===========================================================
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🌐 Health server running on port ${PORT}`);
-});
+  client.on(
+    "interactionCreate",
+    (interactionObject) => {
 
-client.login(process.env.DISCORD_TOKEN);
+      console.log(
+        `📨 Discord interactionCreate received | type=${interactionObject.type} | ` +
+        `customId=${interactionObject.customId ?? "none"} | ` +
+        `command=${interactionObject.commandName ?? "none"} | ` +
+        `user=${interactionObject.user?.tag ?? interactionObject.user?.id ?? "unknown"}`
+      );
+
+      // Run the async interaction handler.
+      //
+      // "void" intentionally ignores the returned Promise while
+      // allowing interaction() to handle its own errors.
+      void interaction(
+        client,
+        interactionObject
+      ).catch((error) => {
+        console.error(
+          "❌ Unhandled interaction event error:",
+          error
+        );
+      });
+    }
+  );
+
+  // ===========================================================
+  // EVENT REGISTRATION COMPLETE
+  // ===========================================================
+
+  console.log(
+    "✅ QA Central event handlers registered."
+  );
+}
