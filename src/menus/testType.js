@@ -14,17 +14,17 @@ export function testTypeMenu() {
     .addOptions(
       {
         label: "Paid Test",
-        description: "Offer Robux or another reward to testers.",
+        description: "Pay testers with Robux.",
         value: "paid",
         emoji: e.qa_paid
       },
       {
         label: "Volunteer Test",
-        description: "Get community testing without a reward.",
+        description: "Community testing without payment.",
         value: "volunteer",
         emoji: e.qa_free
       }
     );
 
   return new ActionRowBuilder().addComponents(menu);
-        }
+}
